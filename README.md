@@ -467,7 +467,7 @@ jobs:
 
 Have questions or feedback? 
 
-- 📧 Email: [your.email@example.com](tech.yogesh@proton.me)
+- 📧 Email: [tech.yogesh@proton.me](mailto:tech.yogesh@proton.me)
 - 💬 Connect on [LinkedIn](https://www.linkedin.com/in/ywankhede/)
 
 <div align="center">
