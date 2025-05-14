@@ -433,230 +433,80 @@ jobs:
 - If tests fail with Appium connection issues, verify the Appium server is running
 - Ensure all required Python packages are installed (check `requirements.txt` and `requirements-dev.txt`)
 - Check Jenkins agent has necessary permissions to run mobile emulators/simulators
-- **Secure**: Environment-based configuration and secure credential handling
-- **Page Object Model**: Clean and maintainable test structure
-- **Parallel Execution**: Support for parallel test execution
-- **Retry Mechanism**: Automatic retry for flaky tests
-
-## Prerequisites
-
-- Python 3.8+
-- Java JDK 8+
-- Node.js and npm
-- Appium Server
-- Android SDK (for Android testing)
-- Xcode (for iOS testing)
-- Appium Inspector or similar tool for element inspection
-
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/mobile-automation-framework.git
-   cd mobile-automation-framework
-   ```
-
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Install Appium globally:
-   ```bash
-   npm install -g appium
-   ```
-
-## Configuration
-
-1. Create a `.env` file in the project root with your configuration:
-   ```ini
-   # Appium Server
-   APPIUM_HOST=127.0.0.1
-   APPIUM_PORT=4723
-   
-   # Android Configuration
-   ANDROID_DEVICE_NAME=Android Emulator
-   ANDROID_PLATFORM_VERSION=13.0
-   ANDROID_APP_PATH=/path/to/your/app.apk
-   ANDROID_APP_PACKAGE=com.example.app
-   ANDROID_APP_ACTIVITY=.MainActivity
-   
-   # iOS Configuration
-   IOS_DEVICE_NAME=iPhone 14
-   IOS_PLATFORM_VERSION=16.4
-   IOS_APP_PATH=/path/to/your/app.ipa
-   
-   # Test Configuration
-   WAIT_TIME=10
-   IMPLICIT_WAIT=10
-   ```
-
-## Running Tests
-
-### Run All Tests
-```bash
-pytest
-```
-
-### Run Specific Test Suite
-```bash
-pytest test_cases/test_sample.py -v
-```
-
-### Run Tests by Platform
-```bash
-# Android tests
-pytest -m android
-
-# iOS tests
-pytest -m ios
-```
-
-### Run with Allure Report
-```bash
-# Run tests
-pytest
-
-# Generate Allure report
-allure serve reports/allure-results
-```
-
-### Run in Parallel
-```bash
-pytest -n auto
-```
-
-## CI/CD Integration
-
-### GitHub Actions
-Example workflow (`.github/workflows/run-tests.yml`):
-
-```yaml
-name: Run Mobile Tests
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  test:
-    runs-on: macos-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        npm install -g appium
-    
-    - name: Start Appium server
-      run: |
-        appium --log-level error --log-timestamp --local-timezone &
-        APPIUM_PID=$!
-        echo "APPIUM_PID=$APPIUM_PID" >> $GITHUB_ENV
-    
-    - name: Run tests
-      env:
-        ANDROID_DEVICE_NAME: Android Emulator
-        ANDROID_PLATFORM_VERSION: 13.0
-        # Add other environment variables as needed
-      run: |
-        pytest -v --junitxml=test-results/junit.xml
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: test-results
-        path: |
-          test-results/
-          reports/
-    
-    - name: Stop Appium server
-      if: always()
-      run: |
-        kill ${{ env.APPIUM_PID }}
-```
-
-## 📊 Test Reports
-
-![HTML Report Example](https://via.placeholder.com/800x400.png?text=Test+Report+Example)
-
-*Example of HTML test report with screenshots*
 
 ## 🔒 Security Considerations
 
-### 🔑 Secure Credential Management
-All sensitive information is stored securely using environment variables or a vault service. Never commit secrets to version control.
+<div class="security-considerations">
+  <div class="security-item">
+    <h3>🔑 Secure Credential Management</h3>
+    <p>All sensitive information is stored securely using environment variables or a vault service. Never commit secrets to version control.</p>
+  </div>
+  
+  <div class="security-item">
+    <h3>🔐 Secure Storage</h3>
+    <p>Leverage platform-specific secure storage solutions for storing sensitive test data and credentials.</p>
+  </div>
+  
+  <div class="security-item">
+    <h3>🌐 Network Security</h3>
+    <p>Ensure secure communication with test servers using HTTPS and secure protocols for all API communications.</p>
+  </div>
+  
+  <div class="security-item">
+    <h3>🔐 Code Security</h3>
+    <p>Regularly update dependencies and follow secure coding practices in test scripts.</p>
+  </div>
+  
+  <div class="security-item">
+    <h3>🛡️ Infrastructure Security</h3>
+    <p>Secure your CI/CD pipeline with proper access controls and secrets management.</p>
+  </div>
+</div>
 
-### 🔐 Secure Storage
-Leverage platform-specific secure storage solutions for storing sensitive test data and credentials.
+## 📬 Contact
 
-### 🌐 Network Security
-- Ensure secure communication with test servers using HTTPS
-- Use secure protocols for all API and service communications
-- Store sensitive information like API keys and credentials in environment variables or secure storage
+Have questions or feedback? 
 
-### 🔐 Code Security
-- Regularly update dependencies to address security vulnerabilities
-- Follow secure coding practices in test scripts
-- Validate and sanitize all inputs to test cases
+- 📧 Email: [your.email@example.com](mailto:your.email@example.com)
+- 💬 Connect on [LinkedIn](https://www.linkedin.com/in/yogesh-wankhede/)
 
-### 🛡️ Infrastructure Security
-- Secure your CI/CD pipeline with proper access controls
-- Use secrets management for sensitive data
-- Regularly audit and rotate credentials
+<div align="center">
+  <p>Made with ❤️ by Yogesh Wankhede</p>
+  <p>If you find this project useful, please consider giving it a ⭐️ on GitHub!</p>
+</div>
 
-## 🤝 Contributing
+<style>
+.security-considerations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
 
-We welcome contributions! Please follow these steps:
+.security-item {
+  flex: 1;
+  min-width: 280px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+.security-item:hover {
+  transform: translateY(-4px);
+}
 
-## 📄 License
+.security-item h3 {
+  color: #2d3748;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Appium](https://appium.io/) - Cross-platform mobile automation
-- [Pytest](https://docs.pytest.org/) - Testing framework
-- [AWS Device Farm](https://aws.amazon.com/device-farm/) - Cloud testing platform
-- [Jenkins](https://www.jenkins.io/) - Automation server
-
-## 📧 Contact
-
-Yogesh Wankhede - [LinkedIn](https://www.linkedin.com/in/yogesh-wankhede/)
-
-Project Link: [https://github.com/yogeshwankhede007/windsurf-mobile-automation](https://github.com/yogeshwankhede007/windsurf-mobile-automation)
-
-## Best Practices
-
-1. **Page Object Model**: Follow the Page Object Model pattern for better maintainability.
-2. **Locators**: Use stable locators and implement self-healing mechanisms.
-3. **Waits**: Use explicit waits instead of static sleeps.
-4. **Reporting**: Always add meaningful test steps and assertions.
-5. **Error Handling**: Implement proper error handling and recovery mechanisms.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+.security-item p {
+  color: #4a5568;
+  line-height: 1.6;
+}
+</style>
