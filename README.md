@@ -595,89 +595,59 @@ jobs:
 
 ## 📊 Test Reports
 
-<div align="center">
-  <img src="https://via.placeholder.com/800x400/2d3748/ffffff?text=Test+Reports+Preview" alt="Test Reports Preview" width="100%">
-  
-  *Example of HTML test report with screenshots*
-</div>
+![HTML Report Example](https://via.placeholder.com/800x400.png?text=Test+Report+Example)
+
+*Example of HTML test report with screenshots*
 
 ## 🔒 Security Considerations
 
-<div class="security-considerations">
-  <div class="security-item">
-    <h3>🔑 Secure Credential Management</h3>
-    <p>All sensitive information is stored securely using environment variables or a vault service. Never commit secrets to version control.</p>
-  </div>
-  
-  <div class="security-item">
-    <h3>🔐 Secure Storage</h3>
-    <p>Leverage platform-specific secure storage solutions for storing sensitive test data and credentials.</p>
-  </div>
-  
-  <div class="security-item">
-    <h3>🔒 Network Security</h3>
-    <p>All network communications are secured using TLS/SSL. Certificate pinning is supported for enhanced security.</p>
-  </div>
-</div>
+### 🔑 Secure Credential Management
+All sensitive information is stored securely using environment variables or a vault service. Never commit secrets to version control.
+
+### 🔐 Secure Storage
+Leverage platform-specific secure storage solutions for storing sensitive test data and credentials.
+
+### 🌐 Network Security
+- Ensure secure communication with test servers using HTTPS
+- Use secure protocols for all API and service communications
+- Store sensitive information like API keys and credentials in environment variables or secure storage
+
+### 🔐 Code Security
+- Regularly update dependencies to address security vulnerabilities
+- Follow secure coding practices in test scripts
+- Validate and sanitize all inputs to test cases
+
+### 🛡️ Infrastructure Security
+- Secure your CI/CD pipeline with proper access controls
+- Use secrets management for sensitive data
+- Regularly audit and rotate credentials
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to contribute to this project.
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📬 Contact
+## 🙏 Acknowledgments
 
-Have questions or feedback? 
+- [Appium](https://appium.io/) - Cross-platform mobile automation
+- [Pytest](https://docs.pytest.org/) - Testing framework
+- [AWS Device Farm](https://aws.amazon.com/device-farm/) - Cloud testing platform
+- [Jenkins](https://www.jenkins.io/) - Automation server
 
-- 📧 Email: your.email@example.com
-- 💬 Join our [Slack Community](#)
-- 🐦 Follow us on [Twitter](#)
+## 📧 Contact
 
-<div align="center">
-  <p>Made with ❤️ by Your Team</p>
-  <p>Give a ⭐️ if this project helped you!</p>
-</div>
+Yogesh Wankhede - [LinkedIn](https://www.linkedin.com/in/yogesh-wankhede/)
 
-<style>
-.security-considerations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.security-item {
-  flex: 1;
-  min-width: 280px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
-}
-
-.security-item:hover {
-  transform: translateY(-4px);
-}
-
-.security-item h3 {
-  color: #2d3748;
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.security-item p {
-  color: #4a5568;
-  line-height: 1.6;
-}
-</style>
-3. **Network Security**: Ensure secure communication with test servers using HTTPS.
-4. **Code Scanning**: Integrate security scanning tools in your CI/CD pipeline.
+Project Link: [https://github.com/yogeshwankhede007/windsurf-mobile-automation](https://github.com/yogeshwankhede007/windsurf-mobile-automation)
 
 ## Best Practices
 
