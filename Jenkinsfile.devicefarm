@@ -1,0 +1,166 @@
+pipeline {
+    agent any
+    
+    environment {
+        // AWS Credentials - Use Jenkins credentials binding
+        AWS_CREDENTIALS_ID = 'aws-devicefarm-credentials'
+        AWS_REGION = 'us-west-2'
+        
+        // Project Configuration
+        PROJECT_NAME = 'MobileAutomationWithWindsurf'
+        DEVICE_POOL = 'Top Devices'
+        
+        // Paths
+        TEST_DIR = 'tests'
+        APPS_DIR = 'apps'
+        OUTPUT_DIR = 'reports/aws_devicefarm'
+        
+        // Timeout in minutes
+        TEST_TIMEOUT = '60'
+        
+        // Platform-specific settings
+        PLATFORM = 'android'  // Can be overridden by parameter
+        APP_PATH = ''         // Will be set based on platform
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        
+        stage('Setup Environment') {
+            steps {
+                script {
+                    // Create virtual environment
+                    sh 'python -m venv venv'
+                    sh '. venv/bin/activate && pip install --upgrade pip'
+                    
+                    // Install dependencies
+                    sh '. venv/bin/activate && pip install -r requirements.txt -r requirements-dev.txt'
+                    
+                    // Install AWS CLI if not already installed
+                    sh '''
+                        if ! command -v aws &> /dev/null; then
+                            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                            unzip awscliv2.zip
+                            sudo ./aws/install
+                        fi
+                    '''
+                }
+            }
+        }
+        
+        stage('Find Latest App') {
+            steps {
+                script {
+                    // Find the latest app for the specified platform
+                    if (params.PLATFORM == 'android') {
+                        def latestApk = sh(script: "find ${APPS_DIR}/android -name '*.apk' -o -name '*.aab' | sort -r | head -1", returnStdout: true).trim()
+                        if (!latestApk) {
+                            error("No Android app found in ${APPS_DIR}/android")
+                        }
+                        env.APP_PATH = latestApk
+                    } else if (params.PLATFORM == 'ios') {
+                        def latestIpa = sh(script: "find ${APPS_DIR}/ios -name '*.ipa' | sort -r | head -1", returnStdout: true).trim()
+                        if (!latestIpa) {
+                            error("No iOS app found in ${APPS_DIR}/ios")
+                        }
+                        env.APP_PATH = latestIpa
+                    }
+                    
+                    echo "Using ${params.PLATFORM} app: ${env.APP_PATH}"
+                }
+            }
+        }
+        
+        stage('Run AWS DeviceFarm Tests') {
+            steps {
+                script {
+                    // Create test package and run on AWS Device Farm
+                    withCredentials([
+                        [$class: 'AmazonWebServicesCredentialsBinding',
+                         credentialsId: AWS_CREDENTIALS_ID,
+                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
+                    ]) {
+                        sh '''
+                            . venv/bin/activate
+                            python scripts/run_aws_devicefarm.py \
+                                --project-name "${PROJECT_NAME}" \
+                                --test-dir "${TEST_DIR}" \
+                                --output-dir "${OUTPUT_DIR}" \
+                                --region "${AWS_REGION}" \
+                                --platform "${PLATFORM}" \
+                                --device-pool "${DEVICE_POOL}" \
+                                --env-var "ENV=${params.ENV}" \
+                                --wait \
+                                --timeout "${TEST_TIMEOUT}" \
+                                ${APP_PATH ? "--app-path ${APP_PATH}" : ""}
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Publish Results') {
+            steps {
+                // Publish HTML reports
+                publishHTML(target: [
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: "${OUTPUT_DIR}/artifacts",
+                    reportFiles: 'report.html',
+                    reportName: 'AWS Device Farm Report'
+                ])
+                
+                // Archive artifacts
+                archiveArtifacts artifacts: "${OUTPUT_DIR}/**/*", allowEmptyArchive: true
+                
+                // Publish JUnit test results
+                junit testResults: "${OUTPUT_DIR}/artifacts/*.xml", allowEmptyResults: true
+            }
+        }
+    }
+    
+    parameters {
+        choice(
+            name: 'PLATFORM',
+            choices: ['android', 'ios'],
+            description: 'Target platform for testing'
+        )
+        string(
+            name: 'ENV',
+            defaultValue: 'staging',
+            description: 'Environment to test against (e.g., staging, production)'
+        )
+        string(
+            name: 'APP_PATH',
+            defaultValue: '',
+            description: 'Optional: Path to the app file. If not provided, the latest app in the platform directory will be used.'
+        )
+    }
+    
+    post {
+        always {
+            // Archive test results and artifacts
+            archiveArtifacts artifacts: "${OUTPUT_DIR}/**/*", allowEmptyArchive: true
+            
+            // Clean up workspace
+            cleanWs()
+        }
+        
+        success {
+            // Notify on success
+            echo 'AWS Device Farm tests completed successfully!'
+        }
+        
+        failure {
+            // Notify on failure
+            echo 'AWS Device Farm tests failed!'
+        }
+    }
+}
