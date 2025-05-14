@@ -467,46 +467,10 @@ jobs:
 
 Have questions or feedback? 
 
-- 📧 Email: [your.email@example.com](mailto:your.email@example.com)
-- 💬 Connect on [LinkedIn](https://www.linkedin.com/in/yogesh-wankhede/)
+- 📧 Email: [your.email@example.com](tech.yogesh@proton.me)
+- 💬 Connect on [LinkedIn](https://www.linkedin.com/in/ywankhede/)
 
 <div align="center">
   <p>Made with ❤️ by Yogesh Wankhede</p>
   <p>If you find this project useful, please consider giving it a ⭐️ on GitHub!</p>
 </div>
-
-<style>
-.security-considerations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.security-item {
-  flex: 1;
-  min-width: 280px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
-}
-
-.security-item:hover {
-  transform: translateY(-4px);
-}
-
-.security-item h3 {
-  color: #2d3748;
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.security-item p {
-  color: #4a5568;
-  line-height: 1.6;
-}
-</style>
