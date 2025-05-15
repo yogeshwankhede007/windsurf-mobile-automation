@@ -72,7 +72,8 @@ def run_tests(
     app_path: Optional[str] = None,
     install_plugins: bool = False,
     mark: Optional[str] = None,
-    num_processes: int = 1
+    num_processes: int = 4,
+    suite: str = "all"
 ) -> int:
     """Run tests with the specified configuration."""
     logger.info(f"Running tests for platform: {platform}")
@@ -83,9 +84,18 @@ def run_tests(
         "-v",
         f"--platform={platform}",
         f"-n={num_processes}",
+        "--dist=loadscope",
         "--html=reports/report.html",
-        "--self-contained-html"
+        "--self-contained-html",
+        "--junitxml=reports/junit.xml",
+        "--alluredir=reports/allure-results",
+        f"--device-count={num_processes}",
+        f"--suite={suite}"
     ]
+    
+    # Add suite-specific test directory if not running all suites
+    if suite != "all":
+        cmd.append(f"tests/suites/{suite}")
     
     # Add optional arguments
     if device_udid:
@@ -97,29 +107,38 @@ def run_tests(
     if mark:
         cmd.extend(["-m", mark])
     
-    # Add test directory
-    cmd.append("tests/")
-    
     return run_command(cmd)
 
 
 def main() -> int:
     """Main entry point."""
-    parser = argparse.ArgumentParser(description="Run mobile automation tests")
-    
-    # Test configuration
+    parser = argparse.ArgumentParser(description="Run automated tests.")
     parser.add_argument(
         "--platform",
+        type=str,
         choices=["android", "ios"],
         default="android",
-        help="Target platform (default: android)"
+        help="Platform to test on (android or ios)"
+    )
+    parser.add_argument(
+        "--suite",
+        type=str,
+        choices=["all", "sanity", "smoke", "regression"],
+        default="all",
+        help="Test suite to run (all, sanity, smoke, regression)"
+    )
+    parser.add_argument(
+        "--devices",
+        type=int,
+        default=4,
+        help="Number of parallel devices to run tests on (default: 4)"
     )
     parser.add_argument(
         "--device-udid",
         help="Device/emulator UDID to run tests on"
     )
     parser.add_argument(
-        "--app-path",
+        "--app",
         help="Path to the app file (overrides default for the platform)"
     )
     parser.add_argument(
@@ -131,34 +150,21 @@ def main() -> int:
         "--mark",
         help="Run only tests with the specified marker (e.g., 'smoke' or 'regression')"
     )
-    parser.add_argument(
-        "-n", "--num-processes",
-        type=int,
-        default=1,
-        help="Number of parallel processes (default: 1)"
-    )
-    
-    # Setup options
-    parser.add_argument(
-        "--install-deps",
-        action="store_true",
-        help="Install project dependencies before running tests"
-    )
     
     args = parser.parse_args()
     
-    # Install dependencies if requested
-    if args.install_deps and install_dependencies() != 0:
-        return 1
+    # Install dependencies
+    install_dependencies()
     
     # Run tests
     return run_tests(
         platform=args.platform,
         device_udid=args.device_udid,
-        app_path=args.app_path,
+        app_path=args.app,
         install_plugins=args.install_plugins,
         mark=args.mark,
-        num_processes=args.num_processes
+        num_processes=args.devices,
+        suite=args.suite
     )
 
 

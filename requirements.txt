@@ -57,3 +57,15 @@ safety>=2.3.5
 # Type Hints
 typing-extensions>=4.9.0
 types-PyYAML>=6.0.12.12
+pytest>=7.0.0
+pytest-xdist>=2.5.0
+pytest-html>=3.2.0
+pytest-allure-adaptor>=1.7.10
+pytest-cov>=3.0.0
+pytest-metadata>=1.11.0
+pytest-rerunfailures>=10.2
+pytest-timeout>=2.1.0
+allure-pytest>=2.9.45
+pytest-parallel>=0.1.1
+pytest-split>=0.8.0
+pytest-test-groups>=1.0.3

@@ -40,12 +40,26 @@ logger = logging.getLogger(__name__)
 
 def pytest_addoption(parser: Parser) -> None:
     """Add custom command line options."""
+    # Platform and app configuration
     parser.addoption(
         "--platform",
         action="store",
         default="android",
         choices=["android", "ios"],
         help="Platform to run tests on: android or ios"
+    )
+    parser.addoption(
+        "--suite",
+        action="store",
+        default="all",
+        choices=["all", "sanity", "smoke", "regression"],
+        help="Test suite to run: all, sanity, smoke, or regression"
+    )
+    parser.addoption(
+        "--device-count",
+        type=int,
+        default=4,
+        help="Number of parallel devices to run tests on"
     )
     parser.addoption(
         "--app-path",
@@ -258,17 +272,40 @@ def pytest_collection_modifyitems(
 def pytest_configure(config: Config) -> None:
     """Register custom markers and configure test environment."""
     # Register custom markers
-    config.addinivalue_line("markers", "android: mark test as Android specific")
-    config.addinivalue_line("markers", "ios: mark test as iOS specific")
-    config.addinivalue_line("markers", "smoke: mark test as smoke test")
-    config.addinivalue_line("markers", "regression: mark test as regression test")
-    config.addinivalue_line("markers", "device_farm: mark test for device farm execution")
+    config.addinivalue_line(
+        "markers",
+        "smoke: mark test as smoke test"
+    )
+    config.addinivalue_line(
+        "markers",
+        "sanity: mark test as sanity test"
+    )
+    config.addinivalue_line(
+        "markers",
+        "regression: mark test as regression test"
+    )
+    config.addinivalue_line(
+        "markers",
+        "android: mark test as android specific"
+    )
+    config.addinivalue_line(
+        "markers",
+        "ios: mark test as ios specific"
+    )
+    config.addinivalue_line(
+        "markers",
+        "wip: work in progress - do not run in CI"
+    )
+    
+    # Set parallel execution settings
+    if config.getoption("numprocesses") is None:
+        device_count = config.getoption("--device-count")
+        config.option.numprocesses = device_count
+        logger.info(f"Running tests on {device_count} parallel devices")
     
     # Create necessary directories
     for directory in [config.LOGS_DIR, config.REPORTS_DIR, config.SCREENSHOTS_DIR]:
         directory.mkdir(parents=True, exist_ok=True)
-    
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

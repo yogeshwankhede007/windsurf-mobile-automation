@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+    
+    parameters {
+        choice(
+            name: 'PLATFORM', 
+            choices: ['android', 'ios'], 
+            description: 'Target platform for testing'
+        )
+        choice(
+            name: 'SUITE', 
+            choices: ['all', 'sanity', 'smoke', 'regression'], 
+            description: 'Test suite to run'
+        )
+        string(
+            name: 'DEVICE_COUNT', 
+            defaultValue: '4', 
+            description: 'Number of parallel devices'
+        )
+    }
+    
+    environment {
+        PYTHON_VERSION = '3.9'
+        VENV_PATH = "${WORKSPACE}/venv"
+    }
+    
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    // Create and activate virtual environment
+                    sh "python${PYTHON_VERSION} -m venv ${VENV_PATH}"
+                    sh "${VENV_PATH}/bin/pip install --upgrade pip"
+                    
+                    // Install dependencies
+                    sh "${VENV_PATH}/bin/pip install -r requirements.txt"
+                }
+            }
+        }
+        
+        stage('Run Tests') {
+            parallel {
+                stage('Test Suite') {
+                    steps {
+                        script {
+                            // Run tests with parallel execution
+                            withEnv(["PATH+VENV=${VENV_PATH}/bin"]) {
+                                sh """
+                                    python scripts/run_tests.py \
+                                        --platform ${params.PLATFORM} \
+                                        --suite ${params.SUITE} \
+                                        --devices ${params.DEVICE_COUNT}
+                                """
+                            }
+                        }
+                    }
+                    post {
+                        always {
+                            // Archive test results
+                            junit 'reports/junit.xml'
+                            
+                            // Archive HTML report
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'reports',
+                                reportFiles: 'report.html',
+                                reportName: 'HTML Report'
+                            ])
+                            
+                            // Archive Allure report
+                            allure([
+                                includeProperties: false,
+                                jdk: '',
+                                properties: [],
+                                reportBuildPolicy: 'ALWAYS',
+                                results: [[path: 'reports/allure-results']]
+                            ])
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Clean up workspace
+            cleanWs()
+        }
+    }
+}
