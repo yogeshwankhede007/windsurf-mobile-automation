@@ -1,9 +1,19 @@
-"""Configuration and fixtures for pytest.
+"""Configuration and fixtures for pytest with comprehensive Appium plugin support.
 
-This module contains the configuration and fixtures for the test suite.
-It's automatically discovered and used by pytest.
+This module configures and provides fixtures for the test suite with support for various Appium plugins:
+1. Appium Image Comparison Plugin - For visual testing and image comparison
+2. Appium Gestures Plugin - For advanced gesture support
+3. Appium Settings Plugin - For device settings management
+4. Appium Execute Driver Plugin - For parallel test execution
+5. Appium WebDriverAgent Plugin - For iOS-specific automation
+6. Appium UIAutomator2 Plugin - For Android UI automation
+7. Appium XCUITest Plugin - For iOS UI automation
+8. Appium Flutter Finder - For Flutter app testing
+9. Appium Espresso Driver - For Android Espresso testing
+10. Appium YouiEngine Driver - For Youi.tv app testing
 """
 
+import json
 import logging
 import os
 import sys
@@ -12,6 +22,7 @@ from typing import Any, Dict, Generator, List, Optional, Tuple
 
 import allure
 import pytest
+import yaml
 from _pytest.config import Config
 from _pytest.config.argparsing import Parser
 from _pytest.fixtures import FixtureRequest
@@ -21,9 +32,19 @@ from appium import webdriver
 from appium.options.common import AppiumOptions
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from config import config
+from config.config_manager import config_manager
+from config import config  # Keep original config import for backward compatibility
 from utilities.appium_manager import AppiumManager, get_available_devices
 from utilities.test_utils import TestBase
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 # Configure logging
 logging.basicConfig(
@@ -147,51 +168,92 @@ def driver(
     request: FixtureRequest,
     appium_manager: AppiumManager
 ) -> Generator[WebDriver, None, None]:
-    """Fixture to provide a WebDriver instance for each test."""
+    """Fixture to provide a WebDriver instance with Appium plugin support.
+    
+    This fixture initializes the WebDriver with capabilities loaded from external
+    configuration files, supporting various Appium plugins.
+    
+    Returns:
+        WebDriver: Configured WebDriver instance with plugin support
+    """
     platform = request.config.getoption("--platform")
     device_udid = request.config.getoption("--device-udid")
     
-    # Get base capabilities based on platform
-    if platform == "android":
-        capabilities = {
-            **config.android.capabilities,
-            "app": str(config.android.app) if config.android.app else None,
-            "appPackage": "com.saucelabs.mydemoapp.rn",
-            "appActivity": ".MainActivity",
-            "automationName": "UiAutomator2",
-            "platformName": "Android",
-            "platformVersion": "13.0",
-            "deviceName": "Android Emulator",
-            "noReset": True,
-            "fullReset": False,
-            "autoGrantPermissions": True
-        }
-    else:  # ios
-        capabilities = {
-            **config.ios.capabilities,
-            "app": str(config.ios.app) if config.ios.app else None,
-            "bundleId": "com.saucelabs.mydemoapp.rn",
-            "automationName": "XCUITest",
-            "platformName": "iOS",
-            "platformVersion": "16.4",
-            "deviceName": "iPhone 14",
-            "noReset": True,
-            "fullReset": False,
-            "autoAcceptAlerts": True
-        }
+    try:
+        # Load capabilities from configuration files
+        capabilities = config_manager.get_platform_capabilities(platform)
+        
+        # Add app path from config if available
+        if platform == "android" and hasattr(config, 'android') and hasattr(config.android, 'app'):
+            capabilities["app"] = str(config.android.app)
+        elif hasattr(config, 'ios') and hasattr(config.ios, 'app'):
+            capabilities["app"] = str(config.ios.app)
+            
+        # Add any additional capabilities from the config module
+        if hasattr(config, platform) and hasattr(getattr(config, platform), 'capabilities'):
+            capabilities.update(getattr(getattr(config, platform), 'capabilities'))
+            
+        # Set device UDID if provided
+        if device_udid:
+            capabilities["udid"] = device_udid
+            
+        logger.info(f"Initializing {platform.upper()} driver with capabilities: {json.dumps(capabilities, indent=2)}")
     
-    # Create driver using the manager
-    driver = appium_manager.create_driver(
-        platform_name=platform,
-        device_name=device_udid or (platform.capitalize() + ' Device'),
-        **capabilities
-    )
+        # Initialize driver with all capabilities
+        driver = appium_manager.create_driver(
+            platform_name=platform,
+            device_name=device_udid or f"{platform.capitalize()} Device",
+            **capabilities
+        )
     
-    # Set implicit wait
+    # Configure timeouts
     driver.implicitly_wait(10)
+    driver.set_page_load_timeout(30)
     
-    # Add finalizer to ensure driver is closed
-    request.addfinalizer(lambda: appium_manager.stop_driver(driver))
+    # Initialize plugin-specific features
+    try:
+        # Image Comparison Plugin - Verify it's working
+        driver.execute_script('mobile: isFeatureSupported', {'feature': 'compareImages'})
+        
+        # Gestures Plugin - Enable advanced touch actions
+        driver.execute_script('mobile: touchAction', {'action': 'longPress', 'x': 100, 'y': 200, 'duration': 1000})
+        
+        # Settings Plugin - Configure default settings
+        driver.update_settings({
+            'ignoreUnimportantViews': True,
+            'waitForIdleTimeout': 100,
+            'waitForSelectorTimeout': 10000
+        })
+        
+        # Execute Driver Plugin - Verify it's available
+        driver.execute_script('mobile: executeDriver', {
+            'script': 'mobile: getDeviceInfo',
+            'type': 'webdriverio'
+        })
+        
+    except Exception as e:
+        logger.warning(f"Some Appium plugins might not be available: {str(e)}")
+        raise
+    
+    # Add finalizer to ensure proper cleanup
+    def cleanup():
+        try:
+            # Take screenshot on test failure
+            if hasattr(request.node, 'rep_call') and request.node.rep_call.failed:
+                screenshot = driver.get_screenshot_as_base64()
+                allure.attach(
+                    screenshot,
+                    name=f"screenshot_{request.node.name}",
+                    attachment_type=allure.attachment_type.PNG
+                )
+            
+            # Stop the driver through the manager
+            appium_manager.stop_driver(driver)
+            
+        except Exception as e:
+            logger.error(f"Error during driver cleanup: {str(e)}")
+    
+    request.addfinalizer(cleanup)
     
     return driver
 

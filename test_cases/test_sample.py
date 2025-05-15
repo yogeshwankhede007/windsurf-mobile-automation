@@ -1,41 +1,16 @@
 import allure
 import pytest
-from appium.webdriver.common.appiumby import AppiumBy
 from utilities.test_utils import TestBase
-
-# Sample locators
-class SampleLocators:
-    # Android locators
-    ANDROID_SEARCH_BAR = (AppiumBy.ID, 'search_bar')
-    ANDROID_SEARCH_BUTTON = (AppiumBy.ID, 'search_button')
-    ANDROID_RESULTS = (AppiumBy.ID, 'search_results')
-    
-    # iOS locators
-    IOS_SEARCH_FIELD = (AppiumBy.ACCESSIBILITY_ID, 'Search')
-    IOS_SEARCH_BUTTON = (AppiumBy.ACCESSIBILITY_ID, 'Search')
-    IOS_RESULTS = (AppiumBy.ACCESSIBILITY_ID, 'Results')
-    
-    @classmethod
-    def get_locators(cls, platform):
-        """Get platform-specific locators."""
-        if platform.lower() == 'android':
-            return {
-                'search_bar': cls.ANDROID_SEARCH_BAR,
-                'search_button': cls.ANDROID_SEARCH_BUTTON,
-                'results': cls.ANDROID_RESULTS
-            }
-        else:
-            return {
-                'search_bar': cls.IOS_SEARCH_FIELD,
-                'search_button': cls.IOS_SEARCH_BUTTON,
-                'results': cls.IOS_RESULTS
-            }
+from pages.sample_page import SamplePage
 
 class TestSample(TestBase):
     """Sample test class demonstrating the framework usage."""
     
     @pytest.fixture(autouse=True)
     def setup_class(self, request):
+        """Setup method that runs before each test."""
+        self.sample_page = SamplePage(self.driver)
+        super().setup_class(request):
         """Class level setup."""
         self.locators = SampleLocators.get_locators(self.platform)
     

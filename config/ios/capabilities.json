@@ -1,0 +1,17 @@
+{
+  "ios": {
+    "automationName": "XCUITest",
+    "platformName": "iOS",
+    "platformVersion": "16.4",
+    "deviceName": "iPhone 14",
+    "bundleId": "com.saucelabs.mydemoapp.rn",
+    "appium:webDriverAgentUrl": "http://localhost:8100",
+    "appium:useNewWDA": true,
+    "appium:wdaLaunchTimeout": 60000,
+    "appium:wdaConnectionTimeout": 180000,
+    "appium:waitForQuiescence": false,
+    "appium:simpleIsVisibleCheck": true,
+    "appium:shouldUseTestManagerForVisibilityDetection": false,
+    "appium:maxTypingFrequency": 60
+  }
+}

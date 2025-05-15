@@ -1,0 +1,25 @@
+{
+  "common": {
+    "noReset": true,
+    "fullReset": false,
+    "autoGrantPermissions": true,
+    "newCommandTimeout": 300,
+    "appium:autoAcceptAlerts": true,
+    "appium:imageComparisonVersion": "1.0",
+    "appium:imageComparisonFormat": "png",
+    "appium:imageComparisonQuality": 90,
+    "appium:enableMultiActions": true,
+    "appium:ignoreUnimportantViews": true,
+    "appium:settings[ignoreUnimportantViews]": true,
+    "appium:settings[waitForIdleTimeout]": 100,
+    "appium:executionManagerPort": 4823,
+    "appium:executionManagerLogLevel": "debug",
+    "appium:enablePerformanceLogging": true,
+    "appium:performanceLoggingPrefs": {
+      "enableNetwork": true,
+      "enablePage": true
+    },
+    "appium:chromedriverPort": 9515,
+    "appium:showChromedriverLog": true
+  }
+}

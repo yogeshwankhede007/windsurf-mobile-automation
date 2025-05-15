@@ -1,0 +1,19 @@
+{
+  "android": {
+    "automationName": "UiAutomator2",
+    "platformName": "Android",
+    "platformVersion": "13.0",
+    "deviceName": "Android Emulator",
+    "appPackage": "com.saucelabs.mydemoapp.rn",
+    "appActivity": ".MainActivity",
+    "appium:uiautomator2ServerInstallTimeout": 60000,
+    "appium:uiautomator2ServerLaunchTimeout": 60000,
+    "appium:espressoBuildConfig": {
+      "disableIdleTimeout": true
+    },
+    "appium:ignoreHiddenApiPolicyError": true,
+    "appium:enforceAppInstall": false,
+    "appium:skipDeviceInitialization": false,
+    "appium:skipServerInstallation": false
+  }
+}

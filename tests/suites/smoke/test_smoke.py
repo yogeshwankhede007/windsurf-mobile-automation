@@ -16,11 +16,11 @@ class TestAppSmoke(BaseTest):
         logger.info("Testing app launch on Android")
         
         # Verify app launches to the login screen
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "username-field")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('username_field')), \
             "Username field not found on login screen"
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "password-field")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('password_field')), \
             "Password field not found on login screen"
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "login-button")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('login_button')), \
             "Login button not found on login screen"
     
     @pytest.mark.smoke
@@ -30,11 +30,11 @@ class TestAppSmoke(BaseTest):
         logger.info("Testing app launch on iOS")
         
         # Verify app launches to the login screen
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "username-field")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('username_field')), \
             "Username field not found on login screen"
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "password-field")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('password_field')), \
             "Password field not found on login screen"
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "login-button")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('login_button')), \
             "Login button not found on login screen"
     
     @pytest.mark.smoke
@@ -48,7 +48,7 @@ class TestAppSmoke(BaseTest):
         
         # Verify navigation to home screen
         # Replace with actual home screen element verification
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "home-screen")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('home_screen')), \
             "Failed to navigate to home screen after login"
     
     @pytest.mark.smoke
@@ -62,7 +62,7 @@ class TestAppSmoke(BaseTest):
         
         # Verify navigation to home screen
         # Replace with actual home screen element verification
-        assert self.login_page.is_element_displayed((AppiumBy.ACCESSIBILITY_ID, "home-screen")), \
+        assert self.login_page.is_element_displayed(self.login_page.get_platform_locator('home_screen')), \
             "Failed to navigate to home screen after login"
     
     @pytest.mark.smoke

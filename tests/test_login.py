@@ -24,17 +24,45 @@ logger: logging.Logger = logging.getLogger(__name__)
 class LoginPage(BasePage):
     """Page Object for the Login page."""
     
-    # Locators
-    USERNAME_FIELD = ("id", "username")
-    PASSWORD_FIELD = ("id", "password")
-    LOGIN_BUTTON = ("id", "loginButton")
-    FORGOT_PASSWORD_LINK = ("id", "forgotPassword")
-    ERROR_MESSAGE = ("id", "errorMessage")
+    # Android locators
+    ANDROID_USERNAME_FIELD = ("id", "username")
+    ANDROID_PASSWORD_FIELD = ("id", "password")
+    ANDROID_LOGIN_BUTTON = ("id", "loginButton")
+    ANDROID_FORGOT_PASSWORD_LINK = ("id", "forgotPassword")
+    ANDROID_ERROR_MESSAGE = ("id", "errorMessage")
+    
+    # iOS locators
+    IOS_USERNAME_FIELD = (AppiumBy.ACCESSIBILITY_ID, "username-field")
+    IOS_PASSWORD_FIELD = (AppiumBy.ACCESSIBILITY_ID, "password-field")
+    IOS_LOGIN_BUTTON = (AppiumBy.ACCESSIBILITY_ID, "login-button")
+    IOS_FORGOT_PASSWORD_LINK = (AppiumBy.ACCESSIBILITY_ID, "forgot-password")
+    IOS_ERROR_MESSAGE = (AppiumBy.ACCESSIBILITY_ID, "error-message")
     
     def __init__(self, driver):
         """Initialize the LoginPage."""
         super().__init__(driver)
         self.logger = logging.getLogger(__name__)
+        self.platform = self.driver.capabilities['platformName'].lower()
+    
+    def get_platform_locator(self, locator_name: str) -> tuple:
+        """Get the appropriate locator based on platform.
+        
+        Args:
+            locator_name: Name of the locator to get
+            
+        Returns:
+            Tuple containing the locator strategy and value
+        """
+        locators = {
+            'username_field': (self.ANDROID_USERNAME_FIELD, self.IOS_USERNAME_FIELD),
+            'password_field': (self.ANDROID_PASSWORD_FIELD, self.IOS_PASSWORD_FIELD),
+            'login_button': (self.ANDROID_LOGIN_BUTTON, self.IOS_LOGIN_BUTTON),
+            'forgot_password_link': (self.ANDROID_FORGOT_PASSWORD_LINK, self.IOS_FORGOT_PASSWORD_LINK),
+            'error_message': (self.ANDROID_ERROR_MESSAGE, self.IOS_ERROR_MESSAGE)
+        }
+        
+        android_locator, ios_locator = locators[locator_name]
+        return android_locator if self.platform == 'android' else ios_locator
     
     def is_login_page_visible(self, timeout: int = 10) -> bool:
         """Check if the login page is visible."""

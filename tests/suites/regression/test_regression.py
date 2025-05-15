@@ -44,7 +44,7 @@ class TestAppRegression(BaseTest):
         logger.info("Testing password field security")
         
         # Verify password field is secure (shows dots instead of text)
-        password_field = self.login_page.find_element((AppiumBy.ACCESSIBILITY_ID, "password-field"))
+        password_field = self.login_page.find_element(self.login_page.get_platform_locator('password_field'))
         assert password_field.get_attribute("password") == "true", "Password field is not secure"
         
         # Verify password is not logged in plain text
@@ -107,10 +107,7 @@ class TestAppRegression(BaseTest):
         logger.info(f"Testing orientation changes on {platform}")
         
         # Enter some text in the username field
-        self.login_page.enter_text(
-            (AppiumBy.ACCESSIBILITY_ID, "username-field"),
-            "test@example.com"
-        )
+        self.login_page.enter_username("test@example.com")
         
         # Change orientation
         current_orientation = self.driver.orientation
@@ -121,7 +118,7 @@ class TestAppRegression(BaseTest):
         assert self.driver.orientation == new_orientation, "Orientation did not change"
         
         # Verify entered text is still present
-        username_field = self.login_page.find_element((AppiumBy.ACCESSIBILITY_ID, "username-field"))
+        username_field = self.login_page.find_element(self.login_page.get_platform_locator('username_field'))
         assert username_field.get_attribute("value") == "test@example.com", "Entered text was lost"
     
     @pytest.mark.regression
@@ -134,15 +131,10 @@ class TestAppRegression(BaseTest):
         long_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10*1024))
         
         # Test username field
-        self.login_page.enter_text(
-            (AppiumBy.ACCESSIBILITY_ID, "username-field"),
-            long_string
-        )
+        self.login_page.enter_username(long_string)
         
         # Test password field
-        self.login_page.enter_text(
-            (AppiumBy.ACCESSIBILITY_ID, "password-field"),
-            long_string
+        self.login_page.enter_password(long_string)
         )
         
         # Verify the app didn't crash and handles long inputs gracefully
