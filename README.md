@@ -312,7 +312,7 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/mobile-automation-framework.git
+git clone git@github.com:yogeshwankhede007/windsurf-mobile-automation.git
 cd mobile-automation-framework
 
 # Create and activate a virtual environment
