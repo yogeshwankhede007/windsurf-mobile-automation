@@ -2,6 +2,10 @@
 mcp-appium-gestures>=1.0.0
 Appium-Python-Client>=2.11.1
 selenium>=4.15.2
+behave>=1.2.6
+behave-webdriver>=0.1.1
+gherkin>=6.0.0
+allure-behave>=2.2.1
 webdriver-manager>=4.0.1
 python-dotenv>=1.0.0
 PyYAML>=6.0.1
