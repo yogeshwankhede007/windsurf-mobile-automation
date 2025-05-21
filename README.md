@@ -110,12 +110,16 @@
    behave -f allure_behave.formatter:AllureFormatter -o allure-results tests/bdd/features/login.feature
    ```
 
-4. **Install Appium**
-   ```bash
-   npm install -g appium
-   ```
+<details>
+<summary>4. Install Appium</summary>
 
-### Managing Mobile Applications
+```bash
+npm install -g appium
+```
+</details>
+
+<details>
+<summary>📱 Managing Mobile Applications</summary>
 
 This framework supports both Android (.apk) and iOS (.ipa) applications. Place your application files in the appropriate directories:
 
@@ -138,8 +142,65 @@ You can use the provided script to manage your mobile applications:
 ./scripts/manage_apps.py clean --platform android
 ./scripts/manage_apps.py clean --platform ios
 ```
+</details>
+
+## 📱 Project Architecture
+
+```mermaid
+graph TD
+    A[Framework Root] --> B[tests/]
+    A --> C[utils/]
+    A --> D[scripts/]
+    A --> E[apps/]
+    
+    B --> F[test_regression.py]
+    B --> G[test_smoke.py]
+    B --> H[test_performance.py]
+    
+    B --> I[bdd/]
+    I --> J[features/]
+    I --> K[steps/]
+    
+    J --> L[login.feature]
+    J --> M[other_features.feature]
+    
+    K --> N[login_steps.py]
+    K --> O[other_steps.py]
+    
+    C --> P[mcp_gestures.py]
+    C --> Q[test_utils.py]
+    
+    E --> R[android/]
+    E --> S[ios/]
+    
+    R --> T[app.apk]
+    S --> U[app.ipa]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style E fill:#bbf,stroke:#333,stroke-width:2px
+    style I fill:#aaf,stroke:#333,stroke-width:2px
+    
+    classDef test fill:#bbf,stroke:#333,stroke-width:2px
+    classDef feature fill:#aaf,stroke:#333,stroke-width:2px
+    classDef step fill:#aaf,stroke:#333,stroke-width:2px
+    classDef utils fill:#bbf,stroke:#333,stroke-width:2px
+    classDef app fill:#99f,stroke:#333,stroke-width:2px
+    
+    class F,G,H test
+    class J,M feature
+    class K,N,O step
+    class P,Q utils
+    class R,S app
+    class T,U app
+```
 
 ## 🛠️ Test Execution
+
+<details>
+<summary>🛠️ Test Execution</summary>
 
 ### Running Tests Locally
 
