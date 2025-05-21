@@ -55,9 +55,9 @@
         <p>Pre-configured Jenkins pipeline for continuous integration and delivery</p>
       </td>
       <td align="center">
-        <img src="https://img.icons8.com/color/64/000000/test-results.png" width="48" height="48" alt="Reporting"/>
-        <h4>Detailed Reporting</h4>
-        <p>Comprehensive test reports with screenshots and logs for better debugging</p>
+        <img src="https://img.icons8.com/ios-filled/64/000000/gesture.png" width="48" height="48" alt="MCP Gestures"/>
+        <h4>MCP Appium Gestures</h4>
+        <p>Enhanced gesture support with MCP Appium Gestures for smoother and more reliable interactions</p>
       </td>
       <td align="center">
         <img src="https://img.icons8.com/color/64/000000/settings-3.png" width="48" height="48" alt="Configuration"/>
@@ -99,6 +99,7 @@
    ```bash
    pip install -r requirements.txt
    pip install -r requirements-dev.txt
+   pip install mcp-appium-gestures  # For enhanced gesture support
    ```
 
 4. **Install Appium**
